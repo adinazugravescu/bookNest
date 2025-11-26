@@ -1,0 +1,36 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Book {
+  id          String        @id @default(uuid())
+  title       String
+  author      String
+  isbn        String?       @unique
+  description String?
+  location    String?       // Locația unde se găsește cartea (ex: "Biblioteca Centrală, Etaj 2, Raft A-15")
+  available   Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  reservations Reservation[]
+
+  @@map("books")
+}
+
+model Reservation {
+  id        String   @id @default(uuid())
+  userId    String
+  bookId    String
+  status    String   @default("active") // active, completed, cancelled
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  book      Book     @relation(fields: [bookId], references: [id], onDelete: Cascade)
+
+  @@map("reservations")
+}
+
