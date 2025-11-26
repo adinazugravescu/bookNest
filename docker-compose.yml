@@ -83,33 +83,30 @@ services:
       placement:
         constraints:
           - node.role == manager
-  # User Profile Service (comentat pentru testare Keycloak)
-  # user-profile-service:
-  #   build:
-  #     context: ./user-profile-service
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     PORT: 3001
-  #     DATABASE_URL: postgresql://booknest:booknest123@postgres:5432/booknest
-  #     KEYCLOAK_URL: http://keycloak:8080
-  #     KEYCLOAK_REALM: booknest
-  #     KEYCLOAK_CLIENT_ID: user-profile-service
-  #     KEYCLOAK_CLIENT_SECRET: user-profile-service-secret
-  #   ports:
-  #     - "3001:3001"
-  #   networks:
-  #     - auth_net
-  #     - internal_net
-  #     - db_net
-  #   depends_on:
-  #     - postgres
-  #     - keycloak
-  #   deploy:
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role == manager
 
+  user-profile-service:
+    image: user-profile-service:latest
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgresql://booknest:booknest123@postgres:5432/booknest
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: booknest
+      KEYCLOAK_CLIENT_ID: user-profile-service
+      KEYCLOAK_CLIENT_SECRET: user-profile-service-secret
+    ports:
+      - "3001:3001"
+    networks:
+      - auth_net
+      - internal_net
+      - db_net
+    depends_on:
+      - postgres
+      - keycloak
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
   # Library API Service (comentat pentru testare Keycloak)
   # library-api-service:
   #   build:
