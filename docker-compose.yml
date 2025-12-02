@@ -107,33 +107,31 @@ services:
       placement:
         constraints:
           - node.role == manager
-  # Library API Service (comentat pentru testare Keycloak)
-  # library-api-service:
-  #   build:
-  #     context: ./library-api-service
-  #     dockerfile: Dockerfile
-  #   environment:
-  #     PORT: 3002
-  #     DATABASE_URL: postgresql://booknest:booknest123@postgres:5432/booknest
-  #     REDIS_URL: redis://redis:6379
-  #     KEYCLOAK_URL: http://keycloak:8080
-  #     KEYCLOAK_REALM: booknest
-  #     KEYCLOAK_CLIENT_ID: library-api-service
-  #     KEYCLOAK_CLIENT_SECRET: library-api-service-secret
-  #   ports:
-  #     - "3002:3002"
-  #   networks:
-  #     - internal_net
-  #     - db_net
-  #   depends_on:
-  #     - postgres
-  #     - redis
-  #     - keycloak
-  #   deploy:
-  #     replicas: 1
-  #     placement:
-  #       constraints:
-  #         - node.role == manager
+  library-api-service:
+    image: library-api-service:latest
+    environment:
+      PORT: 3002
+      DATABASE_URL: postgresql://booknest:booknest123@postgres:5432/booknest
+      REDIS_URL: redis://redis:6379
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: booknest
+      KEYCLOAK_CLIENT_ID: library-api-service
+      KEYCLOAK_CLIENT_SECRET: library-api-service-secret
+    ports:
+      - "3002:3002"
+    networks:
+      - internal_net
+      - db_net
+      - auth_net
+    depends_on:
+      - postgres
+      - redis
+      - keycloak
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
 
 volumes:
   postgres_data:

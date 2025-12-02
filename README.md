@@ -18,22 +18,40 @@ Platformă web pentru gestionarea cărților și rezervărilor, construită cu m
 
 ## Setup
 
-1. Inițializează Docker Swarm:
+1. Inițializează Docker Swarm (dacă nu e deja inițializat):
 ```bash
 docker swarm init
 ```
 
-2. Deploy stack:
+2. Construiește imaginile Docker pentru microservicii:
+```bash
+# User Profile Service
+docker build -t user-profile-service:latest ./user-profile-service
+
+# Library API Service
+docker build -t library-api-service:latest ./library-api-service
+```
+
+3. Deploy stack:
 ```bash
 docker stack deploy -c docker-compose.yml booknest
 ```
 
-3. Așteaptă ca toate serviciile să pornească (30-60 secunde):
+4. Așteaptă ca toate serviciile să pornească (30-60 secunde):
 ```bash
 docker service ls
 ```
 
-4. Accesează Keycloak Admin Console: http://localhost:8080/admin
+5. Verifică log-urile serviciilor (dacă e nevoie):
+```bash
+# User Profile Service
+docker service logs booknest_user-profile-service
+
+# Library API Service
+docker service logs booknest_library-api-service
+```
+
+6. Accesează Keycloak Admin Console: http://localhost:8080/admin
    - Username: `admin`
    - Password: `admin`
 
@@ -93,11 +111,13 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:3002/books
 - `PUT /profile/me` - Actualizare profil propriu
 
 ### Library API Service
-- `GET /books` - Listare cărți
-- `GET /books/:id` - Detalii carte
+- `GET /books` - Listare cărți (autentificat)
+- `GET /books/:id` - Detalii carte (autentificat)
 - `POST /books` - Adăugare carte (admin)
+- `PUT /books/:id` - Actualizare carte (admin)
 - `DELETE /books/:id` - Ștergere carte (admin)
-- `POST /reservations` - Rezervare carte
-- `GET /reservations/me` - Vizualizare rezervări proprii
-- `DELETE /reservations/:id` - Anulare rezervare
+- `POST /reservations` - Rezervare carte (autentificat)
+- `GET /reservations/me` - Vizualizare rezervări proprii (autentificat)
+- `GET /reservations/:id` - Detalii rezervare (autentificat)
+- `DELETE /reservations/:id` - Anulare rezervare (autentificat)
 
