@@ -22,23 +22,23 @@ Web platform for managing books and reservations.
 docker swarm init
 
 2. Build Docker images for microservices:
-# User Profile Service
+## User Profile Service
 docker build -t user-profile-service:latest ./user-profile-service
 
-# Library API Service
+## Library API Service
 docker build -t library-api-service:latest ./library-api-service
 
-3. Deploy stack:sh
+3. Deploy stack:sh  :
 docker stack deploy -c docker-compose.yml booknest
 
-4. Wait for all services to start (30-60 seconds):h
+4. Wait for all services to start (30-60 seconds):h  :
 docker service ls
 
-5. Check service logs (if needed):
-# User Profile Service
+5. Check service logs (if needed)  :
+## User Profile Service
 docker service logs booknest_user-profile-service
 
-# Library API Service
+## Library API Service
 docker service logs booknest_library-api-service
 
 6. Access Keycloak Admin Console: http://localhost:8080/admin
@@ -82,17 +82,17 @@ curl -X POST http://localhost:8080/realms/booknest/protocol/openid-connect/token
 
 Example of testing with token:
 
-# Get token
+## Get token
 TOKEN=$(curl -s -X POST http://localhost:8080/realms/booknest/protocol/openid-connect/token \
   -d "client_id=booknest-web" \
   -d "username=user1" \
   -d "password=user123" \
   -d "grant_type=password" | jq -r '.access_token')
 
-# Test User Profile Service
+## Test User Profile Service
 curl -H "Authorization: Bearer $TOKEN" http://localhost:3001/profile/me
 
-# Test Library API
+## Test Library API
 curl -H "Authorization: Bearer $TOKEN" http://localhost:3002/books## Endpoints..
 
 ### User Profile Service
