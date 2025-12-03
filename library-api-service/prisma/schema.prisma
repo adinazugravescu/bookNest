@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
 }
 
@@ -9,15 +9,15 @@ datasource db {
 }
 
 model Book {
-  id          String        @id @default(uuid())
-  title       String
-  author      String
-  isbn        String?       @unique
-  description String?
-  location    String?       // Locația unde se găsește cartea (ex: "Biblioteca Centrală, Etaj 2, Raft A-15")
-  available   Boolean       @default(true)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id           String        @id @default(uuid())
+  title        String
+  author       String
+  isbn         String?       @unique
+  description  String?
+  location     String? // Location where the book is located (ex: "Central Library, Floor 2, Section A-15")
+  available    Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   reservations Reservation[]
 
   @@map("books")
@@ -34,4 +34,3 @@ model Reservation {
 
   @@map("reservations")
 }
-

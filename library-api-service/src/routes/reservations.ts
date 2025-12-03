@@ -9,7 +9,7 @@ import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
-// POST /reservations - Rezervare carte
+// POST /reservations - Book reservation
 router.post('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     if (!req.user) {
@@ -22,7 +22,7 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'bookId is required' });
     }
 
-    // Folosim sub (Keycloak ID) ca userId
+    // Use sub (Keycloak ID) as userId
     const reservation = await createReservation({
       userId: req.user.sub,
       bookId,
@@ -41,7 +41,7 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
-// GET /reservations/me - Vizualizare rezervări proprii
+// GET /reservations/me - Visualize own reservations
 router.get('/me', authenticateToken, async (req: Request, res: Response) => {
   try {
     if (!req.user) {
@@ -56,7 +56,7 @@ router.get('/me', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
-// GET /reservations/:id - Detalii rezervare
+// GET /reservations/:id - Details of a reservation
 router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     if (!req.user) {
@@ -70,7 +70,7 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Reservation not found' });
     }
 
-    // Doar utilizatorul care a făcut rezervarea sau admin-ul o poate vedea
+    // Just the user who made the reservation or admin can see it
     const roles = req.user.realm_access?.roles || [];
     if (reservation.userId !== req.user.sub && !roles.includes('admin')) {
       return res.status(403).json({ error: 'Forbidden' });
@@ -83,7 +83,7 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
-// DELETE /reservations/:id - Anulare rezervare
+// DELETE /reservations/:id - Cancel a reservation
 router.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     if (!req.user) {

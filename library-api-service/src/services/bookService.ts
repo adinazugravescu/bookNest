@@ -82,7 +82,7 @@ export async function checkBookAvailability(bookId: string): Promise<boolean> {
     return false;
   }
 
-  // Cartea e disponibilă dacă e marked as available ȘI nu are rezervări active
+  // Book is available if it is marked as available and has no active reservations
   return book.available && book.reservations.length === 0;
 }
 

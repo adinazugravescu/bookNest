@@ -1,123 +1,111 @@
-# BookNest - Platformă de Închirieri de Cărți
+# BookNest - Book Rental Platform
 
-Platformă web pentru gestionarea cărților și rezervărilor, construită cu microservicii orchestrate în Docker Swarm.
+Web platform for managing books and reservations.
 
-## Arhitectură
+## Architecture
 
 - **Keycloak**: SSO Authentication (OIDC)
-- **User Profile Service**: Gestionarea profilurilor utilizatorilor
-- **Library API Service**: Gestionarea cărților și rezervărilor
-- **PostgreSQL**: Baza de date principală
-- **Redis**: Caching și rate limiting
+- **User Profile Service**: User profile management
+- **Library API Service**: Book and reservation management
+- **PostgreSQL**: Main database
+- **Redis**: Caching and rate limiting
 
-## Rețele Docker
+## Docker Networks
 
-- `internal_net`: Comunicare între microservicii
-- `auth_net`: Comunicare Keycloak ↔ User Profile Service
-- `db_net`: Comunicare PostgreSQL ↔ Library API
+- `internal_net`: Communication between microservices
+- `auth_net`: Keycloak ↔ User Profile Service communication
+- `db_net`: PostgreSQL ↔ Library API communication
 
 ## Setup
 
-1. Inițializează Docker Swarm (dacă nu e deja inițializat):
-```bash
+1. Initialize Docker Swarm (if not already initialized):
 docker swarm init
-```
 
-2. Construiește imaginile Docker pentru microservicii:
-```bash
+2. Build Docker images for microservices:
 # User Profile Service
 docker build -t user-profile-service:latest ./user-profile-service
 
 # Library API Service
 docker build -t library-api-service:latest ./library-api-service
-```
 
-3. Deploy stack:
-```bash
+3. Deploy stack:sh
 docker stack deploy -c docker-compose.yml booknest
-```
 
-4. Așteaptă ca toate serviciile să pornească (30-60 secunde):
-```bash
+4. Wait for all services to start (30-60 seconds):h
 docker service ls
-```
 
-5. Verifică log-urile serviciilor (dacă e nevoie):
-```bash
+5. Check service logs (if needed):
 # User Profile Service
 docker service logs booknest_user-profile-service
 
 # Library API Service
 docker service logs booknest_library-api-service
-```
 
-6. Accesează Keycloak Admin Console: http://localhost:8080/admin
+6. Access Keycloak Admin Console: http://localhost:8080/admin
    - Username: `admin`
    - Password: `admin`
 
-## Utilizatori de test
-
-Realm-ul `booknest` este importat automat cu următorii utilizatori:
+## Test Users
+The `booknest` realm is automatically imported with the following users:
 
 - **Admin**: 
   - Username: `admin`
   - Password: `admin123`
   - Email: `admin@booknest.com`
-  - Roluri: `admin`, `user`
+  - Roles: `admin`, `user`
 
 - **User**: 
   - Username: `user1`
   - Password: `user123`
   - Email: `user1@booknest.com`
-  - Roluri: `user`
+  - Roles: `user`
 
-## Obținere Token JWT
+- **User**: 
+  - Username: `user2`
+  - Password: `user123`
+  - Email: `user2@booknest.com`
+  - Roles: `user`
 
-Pentru a obține un token JWT pentru testare:
+## Get JWT Token
 
-```bash
+To obtain a JWT token for testing:
+
 curl -X POST http://localhost:8080/realms/booknest/protocol/openid-connect/token \
   -d "client_id=booknest-web" \
   -d "username=user1" \
   -d "password=user123" \
   -d "grant_type=password"
-```
+  
+  The response will contain an `access_token` that can be used to access the APIs.
 
-Răspunsul va conține `access_token` care poate fi folosit pentru a accesa API-urile.
+## API Testing
 
-## Testare API-uri
+Example of testing with token:
 
-Exemplu de testare cu token:
-
-```bash
-# Obține token
+# Get token
 TOKEN=$(curl -s -X POST http://localhost:8080/realms/booknest/protocol/openid-connect/token \
   -d "client_id=booknest-web" \
   -d "username=user1" \
   -d "password=user123" \
   -d "grant_type=password" | jq -r '.access_token')
 
-# Testează User Profile Service
+# Test User Profile Service
 curl -H "Authorization: Bearer $TOKEN" http://localhost:3001/profile/me
 
-# Testează Library API
-curl -H "Authorization: Bearer $TOKEN" http://localhost:3002/books
-```
-
-## Endpoint-uri
+# Test Library API
+curl -H "Authorization: Bearer $TOKEN" http://localhost:3002/books## Endpoints..
 
 ### User Profile Service
-- `GET /profile/me` - Vizualizare profil propriu
-- `PUT /profile/me` - Actualizare profil propriu
+- `GET /profile/me` - View own profile
+- `PUT /profile/me` - Update own profile
 
 ### Library API Service
-- `GET /books` - Listare cărți (autentificat)
-- `GET /books/:id` - Detalii carte (autentificat)
-- `POST /books` - Adăugare carte (admin)
-- `PUT /books/:id` - Actualizare carte (admin)
-- `DELETE /books/:id` - Ștergere carte (admin)
-- `POST /reservations` - Rezervare carte (autentificat)
-- `GET /reservations/me` - Vizualizare rezervări proprii (autentificat)
-- `GET /reservations/:id` - Detalii rezervare (autentificat)
-- `DELETE /reservations/:id` - Anulare rezervare (autentificat)
-
+- `GET /books` - List books (authenticated)
+- `GET /books/:id` - Book details (authenticated)
+- `POST /books` - Add book (admin)
+- `PUT /books/:id` - Update book (admin)
+- `DELETE /books/:id` - Delete book (admin)
+- `POST /reservations` - Reserve book (authenticated)
+- `GET /reservations/me` - View own reservations (authenticated)
+- `GET /reservations/:id` - Reservation details (authenticated)
+- `DELETE /reservations/:id` - Cancel reservation (authenticated)

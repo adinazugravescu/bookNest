@@ -9,7 +9,7 @@ networks:
     driver: overlay
 
 services:
-  # PostgreSQL Database (pentru aplicație)
+  # PostgreSQL Database (for the application)
   postgres:
     image: postgres:15-alpine
     environment:
@@ -27,7 +27,7 @@ services:
         constraints:
           - node.role == manager
 
-  # PostgreSQL Database (pentru Keycloak)
+  # PostgreSQL Database (for Keycloak)
   postgres-keycloak:
     image: postgres:15-alpine
     environment:

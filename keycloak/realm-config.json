@@ -75,6 +75,21 @@
       "realmRoles": [
         "user"
       ]
+    },
+    {
+      "username": "user2",
+      "enabled": true,
+      "email": "user2@booknest.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "user123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "user"
+      ]
     }
   ]
 }

@@ -11,7 +11,7 @@ import { requireAdmin } from '../middleware/authorize';
 
 const router = Router();
 
-// GET /books - Listare cărți (public, dar autentificat)
+// GET /books - List books(authenticated)
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const books = await getAllBooks();
@@ -22,7 +22,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
-// GET /books/:id - Detalii carte (public, dar autentificat)
+// GET /books/:id - Details of a book(authenticated)
 router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -39,7 +39,7 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   }
 });
 
-// POST /books - Adăugare carte (doar admin)
+// POST /books - Add a book(admin only)
 router.post(
   '/',
   authenticateToken,
@@ -74,7 +74,7 @@ router.post(
   }
 );
 
-// PUT /books/:id - Actualizare carte (doar admin)
+// PUT /books/:id - Update a book(admin only)
 router.put(
   '/:id',
   authenticateToken,
@@ -113,7 +113,7 @@ router.put(
   }
 );
 
-// DELETE /books/:id - Ștergere carte (doar admin)
+// DELETE /books/:id - Delete a book(admin only)
 router.delete(
   '/:id',
   authenticateToken,

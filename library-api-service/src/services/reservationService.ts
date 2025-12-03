@@ -9,13 +9,13 @@ export interface CreateReservationInput {
 }
 
 export async function createReservation(data: CreateReservationInput) {
-  // Verifică dacă cartea e disponibilă
+  // Verify if the book is available
   const isAvailable = await checkBookAvailability(data.bookId);
   if (!isAvailable) {
     throw new Error('Book is not available for reservation');
   }
 
-  // Verifică dacă utilizatorul are deja o rezervare activă pentru această carte
+  // Verify if the user already has an active reservation for this book
   const existingReservation = await prisma.reservation.findFirst({
     where: {
       userId: data.userId,
@@ -68,7 +68,7 @@ export async function cancelReservation(id: string, userId: string) {
     throw new Error('Reservation not found');
   }
 
-  // Doar utilizatorul care a făcut rezervarea sau admin-ul o poate anula
+  // Only the user who made the reservation or admin can cancel it
   if (reservation.userId !== userId) {
     throw new Error('Unauthorized: You can only cancel your own reservations');
   }

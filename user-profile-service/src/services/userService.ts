@@ -13,7 +13,6 @@ export interface UserFromToken {
 
 /**
  * Get or create user profile from Keycloak token
- * This implements the auto-profile creation requirement
  */
 export async function getOrCreateUser(userFromToken: UserFromToken) {
     const { sub, email, preferred_username, realm_access } = userFromToken;

@@ -37,7 +37,6 @@ export const authenticateToken = async (
       token,
       getKey,
       {
-        // Audience verificare comentată - public clients pot avea audience diferit
         // audience: 'booknest-web',
         // Accept both localhost and keycloak issuer (for tokens obtained from outside Docker)
         issuer: [
