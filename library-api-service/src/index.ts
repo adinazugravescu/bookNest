@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import booksRouter from './routes/books';
 import reservationsRouter from './routes/reservations';
+import './config/redis';
 
 dotenv.config();
 

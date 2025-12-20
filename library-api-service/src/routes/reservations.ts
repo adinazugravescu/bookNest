@@ -6,11 +6,12 @@ import {
   cancelReservation,
 } from '../services/reservationService';
 import { authenticateToken } from '../middleware/auth';
+import { rateLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
 
-// POST /reservations - Book reservation
-router.post('/', authenticateToken, async (req: Request, res: Response) => {
+// POST /reservations - Book reservation (with rate limiting)
+router.post('/', authenticateToken, rateLimiter, async (req: Request, res: Response) => {
   try {
     if (!req.user) {
       return res.status(401).json({ error: 'Unauthorized' });
