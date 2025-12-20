@@ -100,12 +100,62 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:3002/books## Endpoints..
 - `PUT /profile/me` - Update own profile
 
 ### Library API Service
-- `GET /books` - List books (authenticated)
-- `GET /books/:id` - Book details (authenticated)
+- `GET /books` - List books (authenticated, rate limited, cached)
+- `GET /books/:id` - Book details (authenticated, rate limited, cached)
 - `POST /books` - Add book (admin)
 - `PUT /books/:id` - Update book (admin)
 - `DELETE /books/:id` - Delete book (admin)
-- `POST /reservations` - Reserve book (authenticated)
+- `POST /reservations` - Reserve book (authenticated, rate limited)
 - `GET /reservations/me` - View own reservations (authenticated)
 - `GET /reservations/:id` - Reservation details (authenticated)
 - `DELETE /reservations/:id` - Cancel reservation (authenticated)
+
+## Advanced Modules
+
+### Distributed Rate Limiting
+
+Rate limiting is implemented using Redis to ensure it works across all replicas of the Library API Service.
+
+**Configuration:**
+- Maximum requests: **30 requests per minute** per user
+- Window: 60 seconds
+- Storage: Redis (distributed)
+
+**Applied endpoints:**
+- `GET /books`
+- `GET /books/:id`
+- `POST /reservations`
+
+**Response headers:**
+- `X-RateLimit-Limit`: Maximum allowed requests (30)
+- `X-RateLimit-Remaining`: Remaining requests in current window
+- `X-RateLimit-Reset`: Timestamp when the limit resets
+
+**TEST:**
+```bash
+# Make 35 requests to test rate limiting
+./test-rate-limit.sh
+```
+
+### Response Caching
+
+Caching is implemented using Redis to improve performance and reduce database load.
+
+**Configuration:**
+- Cache TTL: **5 minutes** (300 seconds)
+- Storage: Redis
+
+**Cached endpoints:**
+- `GET /books`
+- `GET /books/:id`
+
+**Cache invalidation:**
+Cache is automatically invalidated when:
+- A new book is created
+- A book is updated
+- A book is deleted
+
+**TEST:**
+```bash
+./test-cache.sh
+```
