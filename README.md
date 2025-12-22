@@ -34,18 +34,20 @@ docker build -t library-api-service:latest ./library-api-service
 docker build -t frontend:latest ./frontend
 ```
 
-3. Deploy stack:sh  :
+3. Deploy stack:
 docker stack deploy -c docker-compose.yml booknest
 
-4. Wait for all services to start (30-60 seconds):h  :
+4. Wait for all services to start (30-60 seconds):
 docker service ls
 
 5. Check service logs (if needed)  :
-## User Profile Service
+```bash
+# User Profile Service
 docker service logs booknest_user-profile-service
 
 ## Library API Service
 docker service logs booknest_library-api-service
+```
 
 6. Access Keycloak Admin Console: http://localhost:8080/admin
    - Username: `admin`
@@ -63,13 +65,13 @@ The `booknest` realm is automatically imported with the following users:
   - Email: `admin@booknest.com`
   - Roles: `admin`, `user`
 
-- **User**: 
+- **User1**: 
   - Username: `user1`
   - Password: `user123`
   - Email: `user1@booknest.com`
   - Roles: `user`
 
-- **User**: 
+- **User2**: 
   - Username: `user2`
   - Password: `user123`
   - Email: `user2@booknest.com`
