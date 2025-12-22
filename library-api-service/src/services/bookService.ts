@@ -20,8 +20,18 @@ export interface UpdateBookInput {
   available?: boolean;
 }
 
-export async function getAllBooks() {
+export async function getAllBooks(search?: string) {
+  const where = search
+    ? {
+      OR: [
+        { title: { contains: search, mode: 'insensitive' as const } },
+        { author: { contains: search, mode: 'insensitive' as const } },
+      ],
+    }
+    : {};
+
   return prisma.book.findMany({
+    where,
     include: {
       reservations: {
         where: {

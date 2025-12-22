@@ -16,7 +16,9 @@ const router = Router();
 // GET /books - List books (with rate limiting and caching)
 router.get('/', authenticateToken, rateLimiter, cacheMiddleware, async (req: Request, res: Response) => {
   try {
-    const books = await getAllBooks();
+    const { search } = req.query;
+    const searchTerm = typeof search === 'string' ? search : undefined;
+    const books = await getAllBooks(searchTerm);
     res.json(books);
   } catch (error: any) {
     console.error('Error fetching books:', error);
