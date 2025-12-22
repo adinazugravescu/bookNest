@@ -2,6 +2,15 @@
   "realm": "booknest",
   "enabled": true,
   "displayName": "BookNest Realm",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": false,
+  "rememberMe": true,
+  "verifyEmail": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
   "roles": {
     "realm": [
       {
