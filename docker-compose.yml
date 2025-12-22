@@ -68,6 +68,9 @@ services:
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: keycloak123
       KC_HTTP_RELATIVE_PATH: /
+      KC_HTTP_ENABLED: 'true'
+      KC_HOSTNAME_STRICT: 'false'
+      KC_HOSTNAME_STRICT_HTTPS: 'false'
     volumes:
       - ./keycloak/realm-config.json:/opt/keycloak/data/import/realm-config.json
     ports:
@@ -129,6 +132,24 @@ services:
       - keycloak
     deploy:
       replicas: 3
+      placement:
+        constraints:
+          - node.role == manager
+
+  # Frontend Web App
+  frontend:
+    image: frontend:latest
+    ports:
+      - "3000:80"
+    networks:
+      - internal_net
+      - auth_net
+    depends_on:
+      - library-api-service
+      - user-profile-service
+      - keycloak
+    deploy:
+      replicas: 1
       placement:
         constraints:
           - node.role == manager

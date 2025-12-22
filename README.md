@@ -4,6 +4,7 @@ Web platform for managing books and reservations.
 
 ## Architecture
 
+- **Frontend**: React + TypeScript web application
 - **Keycloak**: SSO Authentication (OIDC)
 - **User Profile Service**: User profile management
 - **Library API Service**: Book and reservation management
@@ -22,11 +23,16 @@ Web platform for managing books and reservations.
 docker swarm init
 
 2. Build Docker images for microservices:
-## User Profile Service
+```bash
+# User Profile Service
 docker build -t user-profile-service:latest ./user-profile-service
 
-## Library API Service
+# Library API Service
 docker build -t library-api-service:latest ./library-api-service
+
+# Frontend
+docker build -t frontend:latest ./frontend
+```
 
 3. Deploy stack:sh  :
 docker stack deploy -c docker-compose.yml booknest
@@ -44,6 +50,9 @@ docker service logs booknest_library-api-service
 6. Access Keycloak Admin Console: http://localhost:8080/admin
    - Username: `admin`
    - Password: `admin`
+
+7. Access the Frontend Application: http://localhost:3000
+   - Login with test accounts
 
 ## Test Users
 The `booknest` realm is automatically imported with the following users:
