@@ -12,49 +12,43 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="min-h-screen bg-primary-50">
-      <nav className="bg-white shadow-sm border-b border-primary-200">
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex">
-              <Link to="/" className="flex items-center px-2 py-4">
-                <img
-                  src="/logo.png"
-                  alt="BookNest Logo"
-                  className="h-12 w-auto"
-                  onError={(e) => {
-                    // Hide image if it fails to load
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
-                <span className="text-xl font-bold text-primary-700 ml-1">BookNest</span>
+              <Link to="/" className="flex items-center px-2 py-4 text-xl font-bold text-primary-600">
+                📚 BookNest
               </Link>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <Link
                   to="/"
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/')
-                    ? 'border-primary-600 text-primary-800'
-                    : 'border-transparent text-beige-500 hover:text-beige-700 hover:border-beige-300'
-                    }`}
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                    isActive('/')
+                      ? 'border-primary-500 text-gray-900'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
                 >
                   Books
                 </Link>
                 <Link
                   to="/reservations"
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/reservations')
-                    ? 'border-primary-600 text-primary-800'
-                    : 'border-transparent text-beige-500 hover:text-beige-700 hover:border-beige-300'
-                    }`}
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                    isActive('/reservations')
+                      ? 'border-primary-500 text-gray-900'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
                 >
                   My Reservations
                 </Link>
                 {user?.role === 'admin' && (
                   <Link
                     to="/admin"
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${isActive('/admin')
-                      ? 'border-primary-600 text-primary-800'
-                      : 'border-transparent text-beige-500 hover:text-beige-700 hover:border-beige-300'
-                      }`}
+                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
+                      isActive('/admin')
+                        ? 'border-primary-500 text-gray-900'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
                   >
                     Admin Panel
                   </Link>
@@ -72,7 +66,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </Link>
               <button
                 onClick={logout}
-                className="bg-primary-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-700 transition-colors"
+                className="bg-primary-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-primary-700"
               >
                 Logout
               </button>

@@ -11,7 +11,7 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build the application (Vite will copy public folder to dist)
+# Build the application
 RUN npm run build
 
 # Production stage

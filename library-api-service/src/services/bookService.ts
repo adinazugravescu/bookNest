@@ -1,5 +1,4 @@
 import { PrismaClient } from '@prisma/client';
-import { invalidateCache } from '../middleware/cache';
 
 const prisma = new PrismaClient();
 
@@ -20,18 +19,8 @@ export interface UpdateBookInput {
   available?: boolean;
 }
 
-export async function getAllBooks(search?: string) {
-  const where = search
-    ? {
-      OR: [
-        { title: { contains: search, mode: 'insensitive' as const } },
-        { author: { contains: search, mode: 'insensitive' as const } },
-      ],
-    }
-    : {};
-
+export async function getAllBooks() {
   return prisma.book.findMany({
-    where,
     include: {
       reservations: {
         where: {
@@ -59,30 +48,22 @@ export async function getBookById(id: string) {
 }
 
 export async function createBook(data: CreateBookInput) {
-  const book = await prisma.book.create({
+  return prisma.book.create({
     data,
   });
-  await invalidateCache('/books*');
-  return book;
 }
 
 export async function updateBook(id: string, data: UpdateBookInput) {
-  const book = await prisma.book.update({
+  return prisma.book.update({
     where: { id },
     data,
   });
-  await invalidateCache('/books*');
-  await invalidateCache(`/books/${id}*`);
-  return book;
 }
 
 export async function deleteBook(id: string) {
-  const book = await prisma.book.delete({
+  return prisma.book.delete({
     where: { id },
   });
-  await invalidateCache('/books*');
-  await invalidateCache(`/books/${id}*`);
-  return book;
 }
 
 export async function checkBookAvailability(bookId: string): Promise<boolean> {

@@ -8,17 +8,15 @@ const Dashboard = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [hasSearched, setHasSearched] = useState(false);
 
   useEffect(() => {
     loadBooks();
   }, []);
 
-  const loadBooks = async (search?: string) => {
+  const loadBooks = async () => {
     try {
       setLoading(true);
-      const data = await bookService.getAllBooks(search);
+      const data = await bookService.getAllBooks();
       setBooks(data);
       setError(null);
     } catch (err: any) {
@@ -27,21 +25,6 @@ const Dashboard = () => {
       setError(`${errorMessage} (Status: ${err.response?.status || 'N/A'})`);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setHasSearched(true);
-    loadBooks(searchTerm || undefined);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setHasSearched(false);
-    if (e.target.value === '') {
-      setHasSearched(false);
-      loadBooks();
     }
   };
 
@@ -62,47 +45,6 @@ const Dashboard = () => {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Available Books</h1>
         <p className="mt-2 text-gray-600">Browse and reserve books from our library</p>
-      </div>
-
-      {/* Search Bar */}
-      <div className="mb-6">
-        <form onSubmit={handleSearch} className="max-w-2xl">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={handleSearchChange}
-              placeholder="Search by title or author..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-            />
-            <button
-              type="submit"
-              className="px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors"
-            >
-              Search
-            </button>
-            {searchTerm && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchTerm('');
-                  setHasSearched(false);
-                  loadBooks();
-                }}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors"
-              >
-                Clear
-              </button>
-            )}
-          </div>
-        </form>
-        {hasSearched && searchTerm && (
-          <p className="mt-2 text-sm text-gray-600">
-            {books.length === 0
-              ? 'No books found matching your search.'
-              : `Found ${books.length} book${books.length !== 1 ? 's' : ''} matching "${searchTerm}"`}
-          </p>
-        )}
       </div>
 
       {books.length === 0 ? (

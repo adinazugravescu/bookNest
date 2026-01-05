@@ -8,17 +8,13 @@ import {
 } from '../services/bookService';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorize';
-import { rateLimiter } from '../middleware/rateLimiter';
-import { cacheMiddleware } from '../middleware/cache';
 
 const router = Router();
 
-// GET /books - List books (with rate limiting and caching)
-router.get('/', authenticateToken, rateLimiter, cacheMiddleware, async (req: Request, res: Response) => {
+// GET /books - List books(authenticated)
+router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { search } = req.query;
-    const searchTerm = typeof search === 'string' ? search : undefined;
-    const books = await getAllBooks(searchTerm);
+    const books = await getAllBooks();
     res.json(books);
   } catch (error: any) {
     console.error('Error fetching books:', error);
@@ -26,8 +22,8 @@ router.get('/', authenticateToken, rateLimiter, cacheMiddleware, async (req: Req
   }
 });
 
-// GET /books/:id - Details of a book (with rate limiting and caching)
-router.get('/:id', authenticateToken, rateLimiter, cacheMiddleware, async (req: Request, res: Response) => {
+// GET /books/:id - Details of a book(authenticated)
+router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const book = await getBookById(id);

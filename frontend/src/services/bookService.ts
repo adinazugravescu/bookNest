@@ -2,9 +2,8 @@ import { api } from '../config/api';
 import { Book, CreateBookInput, UpdateBookInput } from '../types';
 
 export const bookService = {
-  getAllBooks: async (search?: string): Promise<Book[]> => {
-    const params = search ? { search } : {};
-    const response = await api.get('/books', { params });
+  getAllBooks: async (): Promise<Book[]> => {
+    const response = await api.get('/books');
     return response.data;
   },
 
