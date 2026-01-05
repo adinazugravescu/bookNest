@@ -29,7 +29,10 @@ router.post('/', authenticateToken, rateLimiter, async (req: Request, res: Respo
       bookId,
     });
 
-    res.status(201).json(reservation);
+    res.status(201).json({
+      ...reservation,
+      message: 'Book reserved successfully. We sent to your email the QR code you need to pick up the book from the library.',
+    });
   } catch (error: any) {
     console.error('Error creating reservation:', error);
     if (error.message === 'Book is not available for reservation') {
@@ -111,4 +114,3 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
 });
 
 export default router;
-

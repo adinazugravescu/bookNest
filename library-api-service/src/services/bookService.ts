@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { invalidateCache } from '../middleware/cache';
 
 const prisma = new PrismaClient();
 
@@ -19,8 +20,18 @@ export interface UpdateBookInput {
   available?: boolean;
 }
 
-export async function getAllBooks() {
-  return prisma.book.findMany({
+export async function getAllBooks(search?: string) {
+  const where = search
+    ? {
+      OR: [
+        { title: { contains: search, mode: 'insensitive' as const } },
+        { author: { contains: search, mode: 'insensitive' as const } },
+      ],
+    }
+    : {};
+
+  const books = await prisma.book.findMany({
+    where,
     include: {
       reservations: {
         where: {
@@ -32,10 +43,16 @@ export async function getAllBooks() {
       createdAt: 'desc',
     },
   });
+
+  // Calculate real availability
+  return books.map(book => ({
+    ...book,
+    available: book.available && book.reservations.length === 0,
+  }));
 }
 
 export async function getBookById(id: string) {
-  return prisma.book.findUnique({
+  const book = await prisma.book.findUnique({
     where: { id },
     include: {
       reservations: {
@@ -45,25 +62,43 @@ export async function getBookById(id: string) {
       },
     },
   });
+
+  if (!book) {
+    return null;
+  }
+
+  // Calculate real availability
+  return {
+    ...book,
+    available: book.available && book.reservations.length === 0,
+  };
 }
 
 export async function createBook(data: CreateBookInput) {
-  return prisma.book.create({
+  const book = await prisma.book.create({
     data,
   });
+  await invalidateCache('/books*');
+  return book;
 }
 
 export async function updateBook(id: string, data: UpdateBookInput) {
-  return prisma.book.update({
+  const book = await prisma.book.update({
     where: { id },
     data,
   });
+  await invalidateCache('/books*');
+  await invalidateCache(`/books/${id}*`);
+  return book;
 }
 
 export async function deleteBook(id: string) {
-  return prisma.book.delete({
+  const book = await prisma.book.delete({
     where: { id },
   });
+  await invalidateCache('/books*');
+  await invalidateCache(`/books/${id}*`);
+  return book;
 }
 
 export async function checkBookAvailability(bookId: string): Promise<boolean> {

@@ -40,14 +40,15 @@ const BookDetails = () => {
       setReserving(true);
       setError(null);
       setSuccess(null);
-      await reservationService.createReservation(id);
-      setSuccess('Book reserved successfully!');
+      const response = await reservationService.createReservation(id);
+      // Use message from API response if available, otherwise use default
+      setSuccess(response.message || 'Book reserved successfully!');
       // Reload book to update availability
       await loadBook();
-      // Redirect to reservations after a short delay
+      // Redirect to reservations after a delay
       setTimeout(() => {
         navigate('/reservations');
-      }, 1500);
+      }, 4000);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to reserve book');
     } finally {

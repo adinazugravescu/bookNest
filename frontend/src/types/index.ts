@@ -18,6 +18,7 @@ export interface Reservation {
   createdAt: string;
   updatedAt: string;
   book: Book;
+  message?: string;
 }
 
 export interface UserProfile {

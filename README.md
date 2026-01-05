@@ -56,6 +56,16 @@ docker service logs booknest_library-api-service
 7. Access the Frontend Application: http://localhost:3000
    - Login with test accounts
 
+## Frontend Features
+
+The web application provides the following pages:
+
+- **Dashboard** (`/`) - Browse all available books, search by title or author, view book availability status
+- **Book Details** (`/books/:id`) - View detailed information about a book and reserve it
+- **My Reservations** (`/reservations`) - View and manage your active reservations, cancel reservations
+- **Profile** (`/profile`) - View and edit your profile information (first name, last name)
+- **Admin Panel** (`/admin`) - Manage books (create, update, delete) - Admin role required
+
 ## Test Users
 The `booknest` realm is automatically imported with the following users:
 
@@ -165,6 +175,9 @@ Cache is automatically invalidated when:
 - A new book is created
 - A book is updated
 - A book is deleted
+- A reservation is created (book becomes unavailable)
+- A reservation is cancelled (book becomes available)
+- A reservation is completed (book becomes available)
 
 **TEST:**
 ```bash

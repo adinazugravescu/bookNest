@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { checkBookAvailability } from './bookService';
+import { invalidateCache } from '../middleware/cache';
 
 const prisma = new PrismaClient();
 
@@ -28,12 +29,17 @@ export async function createReservation(data: CreateReservationInput) {
     throw new Error('User already has an active reservation for this book');
   }
 
-  return prisma.reservation.create({
+  const reservation = await prisma.reservation.create({
     data,
     include: {
       book: true,
     },
   });
+
+  // Invalidate cache for books list (includes all book details)
+  await invalidateCache('/books*');
+
+  return reservation;
 }
 
 export async function getUserReservations(userId: string) {
@@ -77,7 +83,7 @@ export async function cancelReservation(id: string, userId: string) {
     throw new Error('Reservation is not active');
   }
 
-  return prisma.reservation.update({
+  const updatedReservation = await prisma.reservation.update({
     where: { id },
     data: {
       status: 'cancelled',
@@ -86,6 +92,11 @@ export async function cancelReservation(id: string, userId: string) {
       book: true,
     },
   });
+
+  // Invalidate cache for books list (book becomes available again)
+  await invalidateCache('/books*');
+
+  return updatedReservation;
 }
 
 export async function completeReservation(id: string) {
@@ -101,7 +112,7 @@ export async function completeReservation(id: string) {
     throw new Error('Reservation is not active');
   }
 
-  return prisma.reservation.update({
+  const updatedReservation = await prisma.reservation.update({
     where: { id },
     data: {
       status: 'completed',
@@ -110,5 +121,10 @@ export async function completeReservation(id: string) {
       book: true,
     },
   });
+
+  // Invalidate cache for books list (book becomes available again)
+  await invalidateCache('/books*');
+
+  return updatedReservation;
 }
 

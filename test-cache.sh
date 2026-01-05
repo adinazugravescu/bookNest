@@ -1,5 +1,17 @@
 #!/bin/bash
 
+echo "Clearing cache for /books endpoint..."
+REDIS_CONTAINER=$(docker ps -q -f name=redis)
+if [ -n "$REDIS_CONTAINER" ]; then
+  # Delete all cache keys matching the pattern
+  docker exec $REDIS_CONTAINER redis-cli --scan --pattern "cache:/books*" | \
+    xargs -r docker exec $REDIS_CONTAINER redis-cli DEL > /dev/null 2>&1
+  echo "Cache cleared for /books endpoint."
+else
+  echo "Warning: Redis container not found. Cache may not be cleared."
+fi
+echo ""
+
 # Get token
 echo "Getting token..."
 TOKEN=$(curl -s -X POST http://localhost:8080/realms/booknest/protocol/openid-connect/token \
@@ -81,4 +93,3 @@ else
 fi
 
 echo "Test completed!"
-

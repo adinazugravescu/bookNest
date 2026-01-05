@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
+import keycloak from '../config/keycloak';
 
 const Login = () => {
   const { authenticated, loading, login } = useAuth();
@@ -22,7 +23,14 @@ const Login = () => {
       <div className="max-w-md w-full space-y-8 p-10 bg-white rounded-xl shadow-lg">
         <div className="text-center">
           <div className="flex justify-center mb-4">
-            <img src="/logo.png" alt="BookNest Logo" className="h-16 w-auto" />
+            <img
+              src="/logo.png"
+              alt="BookNest Logo"
+              className="h-24 w-auto"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
           </div>
           <h1 className="text-4xl font-bold text-primary-700 mb-2">BookNest</h1>
           <p className="text-gray-600">Book Rental Platform</p>
@@ -33,6 +41,12 @@ const Login = () => {
             className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
           >
             Sign in
+          </button>
+          <button
+            onClick={() => keycloak.register()}
+            className="w-full flex justify-center py-3 px-4 border border-primary-600 rounded-md shadow-sm text-sm font-medium text-primary-600 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors"
+          >
+            Create Account
           </button>
         </div>
       </div>
