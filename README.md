@@ -64,7 +64,7 @@ The web application provides the following pages:
 - **Book Details** (`/books/:id`) - View detailed information about a book and reserve it
 - **My Reservations** (`/reservations`) - View and manage your active reservations, cancel reservations
 - **Profile** (`/profile`) - View and edit your profile information (first name, last name)
-- **Admin Panel** (`/admin`) - Manage books (create, update, delete) - Admin role required
+- **Admin Panel** (`/admin`) - Manage books (create, update, delete) and active reservations (complete returns) - Admin role required
 
 ## Test Users
 The `booknest` realm is automatically imported with the following users:
@@ -129,6 +129,7 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:3002/books## Endpoints..
 - `POST /reservations` - Reserve book (authenticated, rate limited)
 - `GET /reservations/me` - View own reservations (authenticated)
 - `GET /reservations/:id` - Reservation details (authenticated)
+- `PUT /reservations/:id/complete` - Complete reservation (admin only)
 - `DELETE /reservations/:id` - Cancel reservation (authenticated)
 
 ## Advanced Modules
