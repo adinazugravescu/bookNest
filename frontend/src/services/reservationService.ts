@@ -21,5 +21,10 @@ export const reservationService = {
     const response = await api.delete(`/reservations/${id}`);
     return response.data;
   },
+
+  completeReservation: async (id: string): Promise<Reservation> => {
+    const response = await api.put(`/reservations/${id}/complete`);
+    return response.data;
+  },
 };
 

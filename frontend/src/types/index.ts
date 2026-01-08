@@ -8,6 +8,7 @@ export interface Book {
   available: boolean;
   createdAt: string;
   updatedAt: string;
+  reservations?: Reservation[];
 }
 
 export interface Reservation {

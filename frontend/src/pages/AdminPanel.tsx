@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { bookService } from '../services/bookService';
+import { reservationService } from '../services/reservationService';
 import { Book, CreateBookInput } from '../types';
 import LoadingSpinner from '../components/LoadingSpinner';
 
@@ -10,6 +11,7 @@ const AdminPanel = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [completing, setCompleting] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const [formData, setFormData] = useState<CreateBookInput>({
@@ -82,6 +84,31 @@ const AdminPanel = () => {
       setError(err.response?.data?.error || 'Failed to delete book');
     } finally {
       setDeleting(null);
+    }
+  };
+
+  const handleCompleteReservation = async (bookId: string) => {
+    const book = books.find((b: Book) => b.id === bookId);
+    const activeReservation = book?.reservations?.find((r) => r.status === 'active');
+
+    if (!activeReservation) {
+      setError('No active reservation found for this book');
+      return;
+    }
+
+    if (!confirm('Are you sure you want to complete this reservation? This marks the book as returned.')) {
+      return;
+    }
+
+    try {
+      setCompleting(bookId);
+      setError(null);
+      await reservationService.completeReservation(activeReservation.id);
+      await loadBooks();
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Failed to complete reservation');
+    } finally {
+      setCompleting(null);
     }
   };
 
@@ -216,6 +243,8 @@ const AdminPanel = () => {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Status
               </th>
+              <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+              </th>
               <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Actions
               </th>
@@ -242,6 +271,17 @@ const AdminPanel = () => {
                     <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded">
                       Reserved
                     </span>
+                  )}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-center">
+                  {!book.available && (
+                    <button
+                      onClick={() => handleCompleteReservation(book.id)}
+                      disabled={completing === book.id}
+                      className="px-1.5 py-0.5 bg-primary-600 text-white text-xs font-medium rounded hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    >
+                      {completing === book.id ? 'Completing...' : 'Complete Reservation'}
+                    </button>
                   )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

@@ -4,8 +4,10 @@ import {
   getUserReservations,
   getReservationById,
   cancelReservation,
+  completeReservation,
 } from '../services/reservationService';
 import { authenticateToken } from '../middleware/auth';
+import { requireAdmin } from '../middleware/authorize';
 import { rateLimiter } from '../middleware/rateLimiter';
 
 const router = Router();
@@ -105,6 +107,25 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
     }
     if (error.message === 'Unauthorized: You can only cancel your own reservations') {
       return res.status(403).json({ error: error.message });
+    }
+    if (error.message === 'Reservation is not active') {
+      return res.status(409).json({ error: error.message });
+    }
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// PUT /reservations/:id/complete - Complete a reservation (admin only)
+router.put('/:id/complete', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const reservation = await completeReservation(id);
+
+    res.json(reservation);
+  } catch (error: any) {
+    console.error('Error completing reservation:', error);
+    if (error.message === 'Reservation not found') {
+      return res.status(404).json({ error: error.message });
     }
     if (error.message === 'Reservation is not active') {
       return res.status(409).json({ error: error.message });
