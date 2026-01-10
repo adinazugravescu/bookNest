@@ -184,3 +184,26 @@ Cache is automatically invalidated when:
 ```bash
 ./test-cache.sh
 ```
+
+## Unit Tests
+
+The advanced features are covered by unit tests.
+
+### Running Unit Tests
+
+**Run tests locally (using Docker):**
+```bash
+cd library-api-service
+./run-tests.sh
+```
+
+**Tests run automatically during Docker build:**
+```bash
+docker build -t library-api-service:latest ./library-api-service
+```
+
+If tests fail, the build fails.
+
+### Test Coverage
+
+The unit tests use mocked Redis to verify that the distributed features function correctly in a multi-replica environment.

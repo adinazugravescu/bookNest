@@ -20,10 +20,14 @@ RUN sed -i 's/binaryTargets = \["native", "debian-openssl-3.0.x", "linux-arm64-o
     echo "=== Prisma binaries generated ===" && \
     ls -la node_modules/.prisma/client/ | grep -E "openssl|query_engine" | head -5
 
-# Copy source code (exclude node_modules - already installed)
+# Copy source code and test files
 COPY src ./src
 COPY tsconfig.json ./
+COPY jest.config.js ./
 COPY .env* ./
+
+# Run unit tests before build
+RUN npm test
 
 # Build TypeScript
 RUN npm run build
@@ -32,4 +36,3 @@ EXPOSE 3002
 
 # Run migrations on startup, then start server
 CMD ["npm", "run", "start:migrate"]
-
