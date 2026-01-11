@@ -17,9 +17,21 @@ Web platform for managing books and reservations.
 - `auth_net`: Keycloak ↔ User Profile Service communication
 - `db_net`: PostgreSQL ↔ Library API communication
 
+## Replication and Scalability
+
+- **Library API Service**: 3 replicas with automatic load balancing
+- **Distributed features**: Rate limiting and caching work across all replicas via Redis
+- **Scaling**: `docker service scale booknest_library-api-service=N`
+
+## Persistent Storage
+
+- **`postgres_data`** - Application database
+- **`postgres_keycloak_data`** - Keycloak database  
+- **`redis_data`** - Redis persistence (cache & rate limiting)
+
 ## Setup
 
-1. Initialize Docker Swarm (if not already initialized):
+1. Initialize Docker Swarm :
 docker swarm init
 
 2. Build Docker images for microservices:
@@ -63,7 +75,7 @@ The web application provides the following pages:
 - **Dashboard** (`/`) - Browse all available books, search by title or author, view book availability status
 - **Book Details** (`/books/:id`) - View detailed information about a book and reserve it
 - **My Reservations** (`/reservations`) - View and manage your active reservations, cancel reservations
-- **Profile** (`/profile`) - View and edit your profile information (first name, last name)
+- **Profile** (`/profile`) - View and edit your profile information
 - **Admin Panel** (`/admin`) - Manage books (create, update, delete) and active reservations (complete returns) - Admin role required
 
 ## Test Users
@@ -87,34 +99,6 @@ The `booknest` realm is automatically imported with the following users:
   - Email: `user2@booknest.com`
   - Roles: `user`
 
-## Get JWT Token
-
-To obtain a JWT token for testing:
-
-curl -X POST http://localhost:8080/realms/booknest/protocol/openid-connect/token \
-  -d "client_id=booknest-web" \
-  -d "username=user1" \
-  -d "password=user123" \
-  -d "grant_type=password"
-  
-  The response will contain an `access_token` that can be used to access the APIs.
-
-## API Testing
-
-Example of testing with token:
-
-## Get token
-TOKEN=$(curl -s -X POST http://localhost:8080/realms/booknest/protocol/openid-connect/token \
-  -d "client_id=booknest-web" \
-  -d "username=user1" \
-  -d "password=user123" \
-  -d "grant_type=password" | jq -r '.access_token')
-
-## Test User Profile Service
-curl -H "Authorization: Bearer $TOKEN" http://localhost:3001/profile/me
-
-## Test Library API
-curl -H "Authorization: Bearer $TOKEN" http://localhost:3002/books## Endpoints..
 
 ### User Profile Service
 - `GET /profile/me` - View own profile
@@ -131,6 +115,12 @@ curl -H "Authorization: Bearer $TOKEN" http://localhost:3002/books## Endpoints..
 - `GET /reservations/:id` - Reservation details (authenticated)
 - `PUT /reservations/:id/complete` - Complete reservation (admin only)
 - `DELETE /reservations/:id` - Cancel reservation (authenticated)
+
+## Reservation Features
+
+- **Statuses**: `active`, `completed`, `cancelled`
+- **Validations**: Book must be available; user cannot have duplicate active reservations
+- **Authorization**: Users can cancel own reservations; admins can complete any reservation
 
 ## Advanced Modules
 
@@ -171,14 +161,15 @@ Caching is implemented using Redis to improve performance and reduce database lo
 - `GET /books`
 - `GET /books/:id`
 
+**Response headers:**
+- `X-Cache: HIT` - Response served from cache
+- `X-Cache: MISS` - Response fetched from database
+
 **Cache invalidation:**
 Cache is automatically invalidated when:
 - A new book is created
-- A book is updated
-- A book is deleted
-- A reservation is created (book becomes unavailable)
-- A reservation is cancelled (book becomes available)
-- A reservation is completed (book becomes available)
+- A book is updated or deleted
+- A reservation is created, cancelled or completed
 
 **TEST:**
 ```bash
